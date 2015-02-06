@@ -83,7 +83,8 @@ HowManyFiles = length(files) % Need to know the number of files to process.  Thi
 % I will use each data set or not
 % --- 
 for FileCounter=1:length(files)  %this loop imports the data files one-by-one and processes the data in them into output files.   
-clear PhysioVars
+clear PhysioVars EEG1 EEG2 EMG EMG_data
+clear EEG1
 %clear dynamic_range
 %clear TimeStampMatrix   
 
@@ -178,13 +179,23 @@ window_length = 4;      % length of moving window used to compute UA and LA if s
     EEG1(i)=~isempty(strfind(HeadChars(i,:),'EEG 1'));
     EEG2(i)=~isempty(strfind(HeadChars(i,:),'EEG 2'));
     onetotwo(i)=~isempty(strfind(HeadChars(i,:),'1-2 '));
+    EMG(i)=~isempty(strfind(HeadChars(i,:),'EMG'));
   end
     
   EEG1_1to2Hzcolumn = intersect(find(EEG1),find(onetotwo))-2; % subtract 2 to account for the fact that the first two columns are timestamp and lactate
   EEG2_1to2Hzcolumn = intersect(find(EEG2),find(onetotwo))-2;
+  EMG_column = find(EMG)-2;
 
 PhysioVars(:,3) = sum(data(:,EEG1_1to2Hzcolumn:EEG1_1to2Hzcolumn+2),2);  %the plus 2 means add the values in the columns for 1-2,2-3 and 3-4 Hz
 PhysioVars(:,4) = sum(data(:,EEG2_1to2Hzcolumn:EEG2_1to2Hzcolumn+2),2);
+
+% EMG data 
+EMG_data = data(:,EMG_column);
+
+
+% re-score wake epochs into quiet wake vs. active wake, based on EMG
+newstate = RescoreQuietVsActiveWake(PhysioVars(:,1),EMG_data,0.33,0.66,FileCounter,files);
+
 
 
   % PhysioVars(:,3) = mean(data(:,3:5),2);     % as many rows as there are rows in the input file, EEG1 delta power (1-4Hz) 
@@ -210,8 +221,10 @@ PhysioVars(:,4) = sum(data(:,EEG2_1to2Hzcolumn:EEG2_1to2Hzcolumn+2),2);
 
 
 
-  state_data{FileCounter} = PhysioVars(:,1);
-  
+  %state_data{FileCounter} = PhysioVars(:,1);
+  state_data{FileCounter} = newstate;
+
+
   if strcmp(signal,'lactate')
     signal_data{FileCounter} = PhysioVars(:,2);
   elseif strcmp(signal,'delta1') | strcmp(signal,'EEG1')
