@@ -1909,3 +1909,6 @@ EEG1 and EEG2 run for 2.5 hour recovery, but very little data so fitting is kind
 lactate in recovery looks quite good.  Some are beautiful.  None are bad.  
 
 For GitHub: use the Windows GUI and clone the Epoch-Based-Processing repository from Wisorlab.  When I make changes to files 
+
+I'm working on implementing the quiet wake vs. active wake idea.  The code is in Todays_code_testing/Quiet-Active-Wake. 
+TO DO: update Franken_like_model.m to use all 4 tau values, not just Ti and Td.  

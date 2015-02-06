@@ -89,8 +89,8 @@ dt=1/(60*60/epoch_length);  % assuming  t is in hours
 % COMPUTING LOOP
 % use the nelder_mead algorithm to find the global minimum error
 % fminsearch uses Nelder-Mead
-initial_guess_delta = [2 2];     % one starting guess
-initial_guess_lactate = [0.3 0.3];
+initial_guess_delta = [2 2 2 2];     % one starting guess
+initial_guess_lactate = [0.3 0.3 0.3 0.3];
 
 if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') || strcmp(signal,'EEG2')
   [bestparams,best_error] = fminsearch(@(p) myobjectivefunction(signal,t_mdpt_indices,data_at_SWS_midpoints, ...
@@ -101,21 +101,25 @@ if strcmp(signal,'lactate')
 [bestparams,best_error] = fminsearch(@(p) myobjectivefunction(signal,0,0,datafile,dt,LA,UA, ...
 								window_length,epoch_length,mask,p),initial_guess_lactate,optimset('TolX',1e-3));
 end
-best_tau_i=bestparams(1);
-best_tau_d=bestparams(2);
+best_tau_w = bestparams(1);
+best_tau_q = bestparams(2);
+best_tau_ar= bestparams(3);
+best_tau_d = bestparams(4);
 
-Ti=best_tau_i;    %output the best taus
+Tw=best_tau_w;    %output the best taus
+TQ=best_tau_q;
+TAR=best_tau_ar;
 Td=best_tau_d;
 
 
 % run one more time with best fit and plot it (add a plot with circles)
 if  strcmp(signal,'lactate')
-  best_S=run_S_model(datafile,dt,(LA(1)+UA(1))/2,LA,UA,Ti,Td,window_length,0,epoch_length,filename);
+  best_S=run_S_model(datafile,dt,(LA(1)+UA(1))/2,LA,UA,Tw,TQ,TAR,Td,window_length,0,epoch_length,filename);
   %error_instant=run_instant_model(datafile,LA,UA,window_length);
 error_instant = 0;
 end
 if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') || strcmp(signal,'EEG2')
- best_S=run_S_model(datafile,dt,(LA(1)+UA(1))/2,LA,UA,Ti,Td,window_length,0,epoch_length,filename);
+ best_S=run_S_model(datafile,dt,(LA(1)+UA(1))/2,LA,UA,Tw,TQ,TAR,Td,window_length,0,epoch_length,filename);
 end
 
 
