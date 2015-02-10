@@ -1,4 +1,4 @@
-function [Ti,Td,LA,UA,best_error,error_instant,best_S,ElapsedTime]=Franken_like_model_with_nelder_mead(datafile,signal,filename,epoch_length,window_length)
+function [Tw,TQ,TAR,Td,LA,UA,best_error,error_instant,best_S,ElapsedTime]=Franken_like_model_with_nelder_mead(datafile,signal,filename,epoch_length,window_length)
 % USAGE:  [Ti,Td,LA,UA,error]=Franken_like_model_with_nelder_mead(datafile,signal)
 %
 % datafile: a sleep data file from Jonathan Wisor where sleep
@@ -152,15 +152,23 @@ if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') |
     only_sleep_indices = find(datafile(:,1)==1);
     only_wake_indices  = find(datafile(:,1)==0);
     only_rem_indices   = find(datafile(:,1)==2);
-    sleep_lactate=datafile(only_sleep_indices,2);
-    wake_lactate=datafile(only_wake_indices,2);
-    rem_lactate=datafile(only_rem_indices,2);
+    only_quiet_wake_indices  = find(datafile(:,1)==3);
+    only_active_wake_indices = find(datafile(:,1)==4);
+
+    sleep_lactate       = datafile(only_sleep_indices,2);
+    wake_lactate        = datafile(only_wake_indices,2);
+    rem_lactate         = datafile(only_rem_indices,2);
+    quiet_wake_lactate  = datafile(only_quiet_wake_indices,2);
+    active_wake_lactate = datafile(only_active_wake_indices,2);
+
+
     scatter(t(only_wake_indices),wake_lactate,25,'r')
       
     hold on
     scatter(t(only_sleep_indices),sleep_lactate,25,'k')
     scatter(t(only_rem_indices),rem_lactate,25,'c')
-      
+    scatter(t(only_quiet_wake_indices),quiet_wake_lactate,25,'m')
+    scatter(t(only_active_wake_indices),active_wake_lactate,25,'g')
     
    %tS=t(361:end-(60*60/epoch_length));
     tS=t((window_length/2)*(60*60/epoch_length)+1:end-(window_length/2)*(60*60/epoch_length));
@@ -180,16 +188,23 @@ if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') |
     only_sleep_indices_L = find(datafile(L_indices,1)==1);
     only_wake_indices_L  = find(datafile(L_indices,1)==0);
     only_rem_indices_L   = find(datafile(L_indices,1)==2);
+    only_quiet_wake_indices_L  = find(datafile(L_indices,1)==3);
+    only_active_wake_indices_L = find(datafile(L_indices,1)==4);
 
 
     sleep_lactate_scaled=scaled_lactate_data(only_sleep_indices_L);
     wake_lactate_scaled=scaled_lactate_data(only_wake_indices_L);
     rem_lactate_scaled=scaled_lactate_data(only_rem_indices_L);
+    quiet_wake_lactate_scaled=scaled_lactate_data(only_quiet_wake_indices_L);
+    active_wake_lactate_scaled=scaled_lactate_data(only_active_wake_indices_L);
+
+
     scatter(tS(only_wake_indices_L),wake_lactate_scaled,25,'r')
     hold on
     scatter(tS(only_sleep_indices_L),sleep_lactate_scaled,25,'k')
     scatter(tS(only_rem_indices_L),rem_lactate_scaled,25,'c')
-
+    scatter(tS(only_quiet_wake_indices_L),quiet_wake_lactate_scaled,25,'m')
+    scatter(tS(only_active_wake_indices_L),active_wake_lactate_scaled,25,'g')
 
     scaled_L = ((UA-LA)-(UA-best_S))./(UA-LA);
     %plot(tS,scaled_lactate_data,'ro')
@@ -199,7 +214,7 @@ if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') |
     ylabel('Lactate (scaled)')
     xlabel('Time (hours)')
     title(['Scaled lactate data for file ' filename 'using ' num2str(epoch_length) '-second epochs'])
-
+    legend('wake','SWS','REMS','Quiet Wake','Active Wake','model')
      best_S = scaled_L;   % Set best_S to the scaled lactate output so the function returns scaled_L
 
   end

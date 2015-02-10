@@ -1912,3 +1912,5 @@ For GitHub: use the Windows GUI and clone the Epoch-Based-Processing repository 
 
 I'm working on implementing the quiet wake vs. active wake idea.  The code is in Todays_code_testing/Quiet-Active-Wake. 
 TO DO: update Franken_like_model.m to use all 4 tau values, not just Ti and Td.  
+
+* Tuesday, February 10, 2015

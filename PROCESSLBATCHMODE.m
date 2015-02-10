@@ -1,4 +1,4 @@
-function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,Taui,Taud]=PROCESSLBATCHMODE(directory,signal,algorithm,keyword,restrict)
+function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,TauW,TauAR,TauQ,Taud]=PROCESSLBATCHMODE(directory,signal,algorithm,keyword,restrict)
 % USAGE: [signal_data,state_data,residual,best_S,UppA,LowA,Timer,Taui,Taud] =PROCESSLBATCHMODE(directory,signal,algorithm)
 %
 % INPUTS:
@@ -27,7 +27,9 @@ function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,T
 % best_S:  a cell array containing the best fit curve S, one for each file in the directory
 % UppA:    upper asymptote
 % LowA:    lower asymptote
-% Taui:    a vector of the rise time time constant, one value for each file in the directory
+% TauW:    a vector of the rise time time constant (during wake), one value for each file in the directory
+% TauAR:   a vector of the rise time time constant (during active wake and REM), one value for each file in the directory
+% TauQ:    a vector of the fall (or rise) time constant (during quiet waking), one value for each file in the directory
 % Taud:    a vector of the fall time time constant, one value for each file in the directory
 % 
 
@@ -193,8 +195,7 @@ PhysioVars(:,4) = sum(data(:,EEG2_1to2Hzcolumn:EEG2_1to2Hzcolumn+2),2);
 EMG_data = data(:,EMG_column);
 
 
-% re-score wake epochs into quiet wake vs. active wake, based on EMG
-newstate = RescoreQuietVsActiveWake(PhysioVars(:,1),EMG_data,0.33,0.66,FileCounter,files);
+
 
 
 
@@ -218,6 +219,9 @@ newstate = RescoreQuietVsActiveWake(PhysioVars(:,1),EMG_data,0.33,0.66,FileCount
     PhysioVars = handle_artefacts(PhysioVars);
   end 
 
+
+  % re-score wake epochs into quiet wake vs. active wake, based on EMG. Wake=0,SWS=1,REM=2,quiet wake=3, active wake=4
+  newstate = RescoreQuietVsActiveWake(PhysioVars(:,1),EMG_data,0.33,0.66,FileCounter,files);
 
 
 
@@ -379,10 +383,10 @@ for FileCounter=1:length(files)
   disp(['File number ', num2str(FileCounter), ' of ', num2str(length(files))])
   display(files(FileCounter).name)
   if strcmp(algorithm,'NelderMead')  
-	[Ti,Td,LA,UA,best_error,error_instant,S,ElapsedTime] = Franken_like_model_with_nelder_mead([state_data{FileCounter} signal_data{FileCounter}],signal,files(FileCounter).name,epoch_length_in_seconds(FileCounter),window_length);
+	[Tw,TQ,TAR,Td,LA,UA,best_error,error_instant,S,ElapsedTime] = Franken_like_model_with_nelder_mead([state_data{FileCounter} signal_data{FileCounter}],signal,files(FileCounter).name,epoch_length_in_seconds(FileCounter),window_length);
   end
   if strcmp(algorithm,'BruteForce')
-	[Ti,Td,LA,UA,best_error,error_instant,S,ElapsedTime] = Franken_like_model([state_data{FileCounter} signal_data{FileCounter}],signal,files(FileCounter).name,epoch_length_in_seconds(FileCounter),window_length); %for brute-force 
+	[Tw,TQ,TAR,Td,LA,UA,best_error,error_instant,S,ElapsedTime] = Franken_like_model([state_data{FileCounter} signal_data{FileCounter}],signal,files(FileCounter).name,epoch_length_in_seconds(FileCounter),window_length); %for brute-force 
   end
 
 residual(FileCounter) = best_error;
@@ -390,8 +394,11 @@ residual(FileCounter) = best_error;
 %[LAnormalized,UAnormalized]=normalizeLAUA(LA,UA,[state_data{FileCounter} signal_data{FileCounter}],TimeStampMatrix{FileCounter});
 LAnormalized = LA;
 UAnormalized = UA;
-  Taui(FileCounter) = Ti;
-  Taud(FileCounter) = Td;
+  TauAR(FileCounter) = TAR;
+  TauD(FileCounter) = Td;
+  TauQ(FileCounter) = TQ;
+  TauW(FileCounter) = Tw;
+
   LowA{FileCounter} = LAnormalized;  %normalized LA
   UppA{FileCounter} = UAnormalized;  %normalized UA
   Timer(FileCounter) = ElapsedTime;
