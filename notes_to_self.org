@@ -1914,3 +1914,9 @@ I'm working on implementing the quiet wake vs. active wake idea.  The code is in
 TO DO: update Franken_like_model.m to use all 4 tau values, not just Ti and Td.  
 
 * Tuesday, February 10, 2015
+The model now runs on Janne's data if I use lactate as the input.  However, for 10 out of the 14 files, when run using the entire 
+recording as input, Nelder-Mead wasn't able to find a local minimum. It gives a warning about how it ran the maximum number of iterations.  
+The output doesn't look great either.  Sometimes when in quiet wake lactate goes up, sometimes it goes down. Most of the time active wake 
+means lactate is going up, but not always.  
+
+Running the code on Janne's data using EEG2 also had 12 out of 14 files reach the maximum number of iterations.   Using the entire recording.  

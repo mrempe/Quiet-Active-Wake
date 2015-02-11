@@ -1,4 +1,4 @@
-function [Ti,Td,LAnormalized,UAnormalized,best_error,error_instant,best_S,ElapsedTime]=Franken_like_model(datafile,signal,filename,epoch_length,window_length)
+function [Tw,TQ,TAR,Td,LAnormalized,UAnormalized,best_error,error_instant,best_S,ElapsedTime]=Franken_like_model(datafile,signal,filename,epoch_length,window_length)
 % USAGE:  [Ti,Td,error]=Franken_like_model(datafile,signal)
 %
 % datafile: a sleep data file from Jonathan Wisor where sleep
@@ -14,8 +14,12 @@ function [Ti,Td,LAnormalized,UAnormalized,best_error,error_instant,best_S,Elapse
 % window_length: length of moving window (in hours) used to compute UA and LA if signal is lactate
 %
 % OUTPUT:
-% Ti: the optimum value for tau_i, the rate of increase, using a
+% Tw: the optimum value for tau_i, the rate of increase during wake, using a
 % two-process-like model, similar to Franken et al 2001
+%
+% TQ: the optimum time constant for the rise (or fall) during quiet waking 
+% 
+% TAR: the optimum time constant for the rise during active wake or REMS
 %
 % Td: the optimum value for tau_d, the decay rate. 
 % 

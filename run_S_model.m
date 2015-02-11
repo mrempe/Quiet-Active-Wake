@@ -158,7 +158,7 @@ S = zeros(1,size(dataset,1)-(window_length*(60*60/epoch_length)));
           S(i+1) = LA(i+1);
         end
       else
-	error('I found a sleepstate value that was not 0,1,2,3 or 4')
+        error('I found a sleepstate value that was not 0,1,2,3 or 4')
       end
     end
   

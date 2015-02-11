@@ -176,10 +176,12 @@ if strcmp(signal,'delta1') || strcmp(signal,'delta2') || strcmp(signal,'EEG1') |
     plot(tS,best_S,'b')
     plot(tS,LA,'k--')
     plot(tS,UA,'k--')
+    hold off
     ylabel('lactate')
     xlabel('Time (hours)')
     title(['Best fit of model to lactate data for file ' filename 'using ' num2str(epoch_length) '-second epochs'])
-    hold off
+    legend('wake','SWS','REMS','Quiet Wake','Active Wake','model')
+
     
 
     figure

@@ -1,4 +1,4 @@
-function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,TauW,TauAR,TauQ,Taud]=PROCESSLBATCHMODE(directory,signal,algorithm,keyword,restrict)
+function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,TauW,TauAR,TauQ,TauD]=PROCESSLBATCHMODE(directory,signal,algorithm,keyword,restrict)
 % USAGE: [signal_data,state_data,residual,best_S,UppA,LowA,Timer,Taui,Taud] =PROCESSLBATCHMODE(directory,signal,algorithm)
 %
 % INPUTS:
