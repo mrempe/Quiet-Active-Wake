@@ -35,6 +35,9 @@ function [signal_data,state_data,residual,best_S,UppA,LowA,dynamic_range,Timer,T
 
 %profile -memory on
 
+addpath 'C:\Users\wisorlab\Documents\MATLAB\Brennecke\matlab-pipeline\Matlab\etc\matlab-utils\';  %where importdatafile.m XL.m and create_TimeStampMatrix_from_textdata.m live
+
+
 
 if nargin==3
 directory_plus_extension=strcat(directory,'*.txt');
@@ -284,20 +287,20 @@ if ~isstr(restrict) & numel(restrict)==2
 end
 
 if strcmp(restrict,'baseline')
-  locs_of_start_times = find(TimeStampMatrix{FileCounter}(4,:)==10 & TimeStampMatrix{FileCounter}(5,:)==0 & TimeStampMatrix{FileCounter}(6,:)==0); %10AM
+  locs_of_start_times = find([TimeStampMatrix{FileCounter}(:).Hour]==10 & [TimeStampMatrix{FileCounter}(:).Minute]==0 & [TimeStampMatrix{FileCounter}(:).Second]==0); %10AM
   start_index = locs_of_start_times(1);
   end_index = locs_of_start_times(2);  %second instance of 10AM is 24 hours into recording
 end
 
 if strcmp(restrict,'SD')
-  locs_of_start_times = find(TimeStampMatrix{FileCounter}(4,:)==10 & TimeStampMatrix{FileCounter}(5,:)==0 & TimeStampMatrix{FileCounter}(6,:)==0); %10AM
+  locs_of_start_times = find([TimeStampMatrix{FileCounter}(:).Hour]==10 & [TimeStampMatrix{FileCounter}(:).Minute]==0 & [TimeStampMatrix{FileCounter}(:).Second]==0); %10AM
   start_index = locs_of_start_times(2);
-  locs_of_end_times = find(TimeStampMatrix{FileCounter}(4,:)==16 & TimeStampMatrix{FileCounter}(5,:)==0 & TimeStampMatrix{FileCounter}(6,:)==0); %4PM
+  locs_of_end_times = find([TimeStampMatrix{FileCounter}(:).Hour]==16 & [TimeStampMatrix{FileCounter}(:).Minute]==0 & [TimeStampMatrix{FileCounter}(:).Second]==0); %4PM
   end_index = locs_of_end_times(2); %second instance of 4PM.  First is during baseline
 end
 
 if strcmp(restrict,'recovery')
-  locs_of_start_times = find(TimeStampMatrix{FileCounter}(4,:)==16 & TimeStampMatrix{FileCounter}(5,:)==0 & TimeStampMatrix{FileCounter}(6,:)==0); %4PM
+  locs_of_start_times = find([TimeStampMatrix{FileCounter}(:).Hour]==16 & [TimeStampMatrix{FileCounter}(:).Minute]==0 & [TimeStampMatrix{FileCounter}(:).Second]==0); %4PM
   start_index = locs_of_start_times(2);  %second instance of 4PM.  First is during baseline
   end_index = size(signal_data,1);
 end
@@ -305,7 +308,7 @@ end
 if strcmp(restrict,'baseline') | strcmp(restrict,'SD') | strcmp(restrict,'recovery') | (~isstr(restrict) & numel(restrict)==2)
   state_data{FileCounter}  = state_data{FileCounter}(start_index:end_index,1);  %reset state_data and signal_data cell arrays
   signal_data{FileCounter} = signal_data{FileCounter}(start_index:end_index,1);
-  TimeStampMatrix{FileCounter} = TimeStampMatrix{FileCounter}(:,start_index:end_index);
+  TimeStampMatrix{FileCounter} = TimeStampMatrix{FileCounter}(start_index:end_index);
 end 
 
 % Now restrict the data is restrict is
@@ -313,13 +316,13 @@ end
 
 
 % Cut off all data before 8:00PM 
- %  locs_of_start_times = find(TimeStampMatrix{FileCounter}(4,:)==20 & TimeStampMatrix{FileCounter}(5,:)==0 & TimeStampMatrix{FileCounter}(6,:)==0); %the twenty is for 20:00, 8:00PM
+ %  locs_of_start_times = find([TimeStampMatrix{FileCounter}(:).Hour]==20 & [TimeStampMatrix{FileCounter}(:).Minute]==0 & [TimeStampMatrix{FileCounter}(:).Second]==0); %the twenty is for 20:00, 8:00PM
  % start_index = locs_of_start_times(1);
 
  
   % state_data{FileCounter}  = state_data{FileCounter}(start_index:end,1);  %reset state_data and signal_data cell arrays to only include the data starting at 8:00PM
   % signal_data{FileCounter} = signal_data{FileCounter}(start_index:end,1);
-  % TimeStampMatrix{FileCounter} = TimeStampMatrix{FileCounter}(:,start_index:end);
+  % TimeStampMatrix{FileCounter} = TimeStampMatrix{FileCounter}(start_index:end);
 
 
   % compute the length of the datafile in hours 

@@ -1920,3 +1920,15 @@ The output doesn't look great either.  Sometimes when in quiet wake lactate goes
 means lactate is going up, but not always.  
 
 Running the code on Janne's data using EEG2 also had 12 out of 14 files reach the maximum number of iterations.   Using the entire recording.  
+
+* Thursday, February 12, 2015
+Goals for today: 
+1) Talk with Jonathan about Janne's project
+2) Make a new branch on GitHub and start implementing a GUI for Autoscoring and a GUI for Process L.  Perhaps Autoscoring should be its own thing. 
+
+9:10 I copied importdatafile.m into Brennecke/matlab_pipeline/Matlab/etc/matlab-utils/.  This is where the excel exporting code is and I should be including
+this directory in my code anyway.  I didn't want to have several different versions of importdatafile.m floating around, so now there is one copy in matlab-utils.
+
+9:27 Create_TimeStampMatrix_from_textdata.m isn't working on BL-1196  I may have messed it up when I changed it to make it work on Janne's data.  Keep 
+looking at this.  
+
